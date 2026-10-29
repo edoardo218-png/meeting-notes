@@ -1,0 +1,11 @@
+{
+  "APPEARANCE": "light",
+  "AUDIO_RETENTION_DAYS": "30",
+  "CLAUDE_MODEL": "sonnet",
+  "LLM_PROVIDER": "claude",
+  "MY_NAME": "Io",
+  "OTHERS_NAME": "Altri",
+  "SAVE_TO_VAULT": "0",
+  "SILENCE_STOP_MIN": "10",
+  "USE_CALENDAR": "1"
+}
