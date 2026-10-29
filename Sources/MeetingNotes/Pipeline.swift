@@ -248,7 +248,10 @@ struct Pipeline {
         let typed = m.setup.title.trimmingCharacters(in: .whitespaces)
         meeting.title = typed.isEmpty ? previous.title : typed
         meeting.setup.title = meeting.title
-        let titleChanged = meeting.title != previous.title
+        // Anche con lo stesso titolo si rinomina se il file ha ancora il nome vecchio (es. uno spostamento fallito).
+        let expected = Vault.sanitize("\(Vault.dayFormatter.string(from: previous.date)) - \(previous.setup.client?.name ?? inboxLabel) - \(meeting.title)")
+        let fileBehind = meeting.inVault && !typed.isEmpty && !previous.noteURL.deletingPathExtension().lastPathComponent.hasPrefix(expected)
+        let titleChanged = meeting.title != previous.title || fileBehind
 
         var moved = false
         if meeting.inVault, let vault, clientChanged || titleChanged {
@@ -256,7 +259,8 @@ struct Pipeline {
                 try move(&meeting, from: clientChanged ? previous : nil, vault: vault)
                 moved = clientChanged
             } catch {
-                warnings.append("Spostamento nel vault: \(error.localizedDescription)")
+                // Niente di salvato: archivio e vault restano allineati e si può riprovare.
+                return Result(meeting: previous, warnings: ["Spostamento nel vault non riuscito, modifica non salvata: \(error.localizedDescription)"])
             }
         }
         guard meeting.inVault, let vault, FileManager.default.fileExists(atPath: meeting.notePath) else {

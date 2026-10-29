@@ -461,7 +461,10 @@ final class AppState: ObservableObject {
         guard processing[meeting.id] == nil, let previous = meetings.first(where: { $0.id == meeting.id }) else { return }
         let result = Pipeline(config: config).updateDetails(meeting, previous: previous)
         reloadMeetings()
-        if !result.warnings.isEmpty { Notifier.post(title: "Modifica salvata con avvisi", body: result.warnings.joined(separator: "; ")) }
+        if !result.warnings.isEmpty {
+            let failed = result.warnings.contains { $0.hasPrefix("Spostamento nel vault non riuscito") }
+            Notifier.post(title: failed ? "Modifica non salvata" : "Modifica salvata con avvisi", body: result.warnings.joined(separator: "; "))
+        }
     }
 
     func delete(_ meeting: Meeting, deleteFiles: Bool) {

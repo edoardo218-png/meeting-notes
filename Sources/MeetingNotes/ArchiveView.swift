@@ -407,7 +407,7 @@ struct MeetingDetailView: View {
     private func commitTitle() {
         editingTitle = false
         let t = titleDraft.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !t.isEmpty, t != meeting.title else { return }
+        guard !t.isEmpty else { return }   // anche se è uguale: riallinea il nome del file, se serve
         var m = meeting
         m.setup.title = t
         state.updateDetails(m)
